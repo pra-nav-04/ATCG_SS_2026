@@ -1,0 +1,93 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage[margin=2.5cm]{geometry}
+
+\title{ATCG I Sheet R01 Solution}
+\author{Radiometry and Tonemapping}
+\date{April 23, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Assignment 3: Radiance and Irradiance}
+The table is illuminated by the sun, modeled as a distant emitter with constant radiance
+\[
+L_s = 20.045\,\si{\mega\watt\per\square\meter\per\steradian}
+= 2.0045 \times 10^7\,\si{\watt\per\square\meter\per\steradian}.
+\]
+The table normal forms an angle of $\theta = 45^\circ$ with the incident direction, and the table size is
+\[
+A = 0.8 \times 0.8 = 0.64\,\si{\square\meter}.
+\]
+
+The irradiance from a source of constant radiance is
+\[
+E = \int_{\Omega_s} L_s \cos\theta \, d\omega
+= L_s \cos\theta \int_{\Omega_s} d\omega
+= L_s \cos\theta \, \Omega_s.
+\]
+So we first need the solid angle subtended by the sun. Using the solar radius
+\[
+R_s = 6.9634 \times 10^8\,\si{\meter}
+\]
+and the mean Earth-sun distance
+\[
+D = 1.495978707 \times 10^{11}\,\si{\meter},
+\]
+the angular radius is
+\[
+\alpha = \arcsin\left(\frac{R_s}{D}\right).
+\]
+The exact solid angle of a disk with angular radius $\alpha$ is
+\[
+\Omega_s = 2\pi(1-\cos\alpha).
+\]
+Numerically,
+\[
+\alpha \approx \arcsin(4.6547 \times 10^{-3}),
+\qquad
+\Omega_s \approx 6.8068 \times 10^{-5}\,\si{\steradian}.
+\]
+
+Therefore the irradiance at the table is
+\begin{align*}
+E
+&= L_s \cos(45^\circ)\,\Omega_s \\
+&= 2.0045 \times 10^7 \cdot \frac{1}{\sqrt{2}} \cdot 6.8068 \times 10^{-5} \\
+&\approx 9.648 \times 10^2\,\si{\watt\per\square\meter}.
+\end{align*}
+Thus,
+\[
+\boxed{E \approx 964.8\,\si{\watt\per\square\meter}}.
+\]
+
+The total radiant power incident on the table is
+\[
+\Phi = E \cdot A = 964.8 \times 0.64 \approx 617.5\,\si{\watt}.
+\]
+Hence,
+\[
+\boxed{\Phi \approx 617.5\,\si{\watt}}.
+\]
+
+\section*{Practical Assignments}
+Assignments 1 and 2 are solved in the framework code:
+\begin{itemize}
+\item Robertson HDR reconstruction is implemented in:
+\[
+\texttt{src/exercise01\_HDR/Robertson.cpp}
+\quad \text{and} \quad
+\texttt{src/exercise01\_HDR/Robertson.cu}
+\]
+\item Tone mapping modes \texttt{linear\_max}, \texttt{linear\_fixed}, \texttt{gamma\_fixed}, and \texttt{histogram} are implemented in:
+\[
+\texttt{src/exercise01\_HDR/Tonemapping.cpp}
+\quad \text{and} \quad
+\texttt{src/exercise01\_HDR/Tonemapping.cu}
+\]
+\end{itemize}
+
+\end{document}
