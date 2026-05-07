@@ -1,0 +1,46 @@
+<scene>
+
+    <component type="camera" name="mycamera">
+        <property name="fov_y" type="float" value="1.024778957977204" />
+        <property name="lookat_distance" type="float" value="5" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="1" z="5" />
+        </property>
+    </component>
+
+    <component type="raygen.radiosity">
+        <property name="camera" type="reference" value="mycamera" />
+    </component>
+
+    <component name="plane" type="shape.objmesh">
+        <property name="filename" type="string" value="plane_2x2.obj" />
+    </component>
+
+    <component name="emitter0" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="1.0" y="1.0" z="1.0" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="emitter0" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="0" z="0" />
+            <rotate x="1" y="0" z="0" angle="-90" />
+        </property>
+    </component>
+
+
+    <component name="emitter1" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.0" y="0.0" z="0.0" />
+        <property name="emission" type="vector" x="1.0" y="1.0" z="1.0" />
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="emitter1" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="2" z="0" />
+            <rotate x="1" y="0" z="0" angle="90" />
+        </property>
+    </component>
+
+</scene>

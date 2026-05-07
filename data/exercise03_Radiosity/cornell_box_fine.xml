@@ -1,0 +1,141 @@
+<scene>
+
+    <component type="camera" name="mycamera">
+        <property name="fov_y" type="float" value="1.024778957977204" />
+        <property name="lookat_distance" type="float" value="13.5" />
+        <property name="to_world" type="transform">
+            <translate x="0.0001" y="5" z="13.5" />
+        </property>
+    </component>
+
+    <component type="raygen.radiosity">
+        <property name="camera" type="reference" value="mycamera" />
+    </component>
+
+    <component name="plane" type="shape.objmesh">
+        <property name="filename" type="string" value="plane_40x40.obj" />
+    </component>
+    <component name="short_cube" type="shape.objmesh">
+        <property name="filename" type="string" value="short_cube_fine.obj" />
+    </component>
+    <component name="normal_cube" type="shape.objmesh">
+        <property name="filename" type="string" value="cube_fine.obj" />
+    </component>
+    <component name="long_cube" type="shape.objmesh">
+        <property name="filename" type="string" value="long_cube_fine.obj" />
+    </component>
+
+
+
+
+    <component name="floor_wall_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.8" y="0.8" z="0.8" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance" name="floor_wall">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="floor_wall_radiosity" />
+        <property name="to_world" type="transform">
+            <rotate x="1" y="0" z="0" angle="90" />
+            <scale x="5" y="5" z="5" />
+        </property>
+    </component>
+
+    <component name="ceiling_wall_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.8" y="0.8" z="0.8" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance" name="ceiling_wall">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="ceiling_wall_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="10" z="0" />
+            <rotate x="1" y="0" z="0" angle="-90" />
+            <scale x="5" y="5" z="5" />
+        </property>
+    </component>
+
+    <component name="back_wall_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.8" y="0.8" z="0.8" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance" name="back_wall">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="back_wall_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="5" z="-5" />
+            <rotate x="1" y="0" z="0" angle="180" />
+            <scale x="5" y="5" z="5" />
+        </property>
+    </component>
+
+    <component name="left_wall_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.0" y="0.8" z="0.0" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance" name="left_wall">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="left_wall_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="-5" y="5" z="0" />
+            <rotate x="0" y="1" z="0" angle="-90" />
+            <scale x="5" y="5" z="5" />
+        </property>
+    </component>
+
+    <component name="right_wall_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.8" y="0.0" z="0.0" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance" name="right_wall">
+        <property name="shape" type="reference" value="plane" />
+        <property name="emitter" type="reference" value="right_wall_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="5" y="5" z="0" />
+            <rotate x="0" y="1" z="0" angle="90" />
+            <scale x="5" y="5" z="5" />
+        </property>
+    </component>
+
+
+
+    <component name="normal_cube_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.8" y="0.8" z="0.8" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="normal_cube" />
+        <property name="emitter" type="reference" value="normal_cube_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="-1.45418" y="1" z="0.071656" />
+        </property>
+    </component>
+
+    <component name="long_cube_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.8" y="0.8" z="0.8" />
+        <property name="emission" type="vector" x="0.0" y="0.0" z="0.0" />
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="long_cube" />
+        <property name="emitter" type="reference" value="long_cube_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="2.27705" y="2" z="-1.9117" />
+            <rotate x="0" y="1" z="0" angle="32.3591" />
+        </property>
+    </component>
+
+    <component name="light_emitter_radiosity" type="emitter.radiosity">
+        <property name="albedo" type="vector" x="0.0" y="0.0" z="0.0" />
+        <property name="emission" type="vector" x="40.0" y="40.0" z="40.0" />
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="short_cube" />
+        <property name="emitter" type="reference" value="light_emitter_radiosity" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="9.95" z="0" />
+            <rotate x="1" y="0" z="0" angle="180" />
+            <scale x="1" y="0.1" z="1" />
+        </property>
+    </component>
+
+</scene>

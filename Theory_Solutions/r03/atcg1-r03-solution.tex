@@ -1,0 +1,125 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage[margin=2.5cm]{geometry}
+
+\title{ATCG I Sheet R03 Solution}
+\author{
+\large Kamran Moradnejad (3099229) \\
+\large Pranav Yadav (50327698) \\
+\large Saransh Jain (50262919)
+}
+\date{May 7, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Assignment 2: Reflection Equation}
+The sun is modeled as a distant disk emitter with constant radiance
+\[
+L_s = 20.045\,\si{\mega\watt\per\square\meter\per\steradian}
+= 2.0045 \times 10^7\,\si{\watt\per\square\meter\per\steradian}.
+\]
+Its direction encloses an angle of $45^\circ$ with the table normal. Using the solar radius
+\[
+R_s = 6.9634 \times 10^8\,\si{\meter}
+\]
+and the mean Earth-sun distance
+\[
+D = 1.495978707 \times 10^{11}\,\si{\meter},
+\]
+the angular radius of the sun is
+\[
+\alpha = \arcsin\left(\frac{R_s}{D}\right),
+\]
+and the solid angle of the solar disk is
+\[
+\Omega_s = 2\pi(1-\cos\alpha) \approx 6.8068 \times 10^{-5}\,\si{\steradian}.
+\]
+
+Therefore the irradiance on the table is
+\[
+E_{\text{table}} = \int_{\Omega_s} L_s \cos 45^\circ \, d\omega
+= L_s \cos 45^\circ \, \Omega_s
+\approx 964.8\,\si{\watt\per\square\meter}.
+\]
+
+The table is perfectly diffuse with albedo $\rho = 0.5$, hence its outgoing radiance is
+\[
+L_{\text{table}} = \frac{\rho}{\pi} E_{\text{table}}
+= \frac{0.5}{\pi} \cdot 964.8
+\approx 153.55\,\si{\watt\per\square\meter\per\steradian}.
+\]
+
+The lens is a disk with diameter $d = 5\,\si{\centi\meter}$ and radius
+\[
+r_{\text{lens}} = 0.025\,\si{\meter},
+\qquad
+A_{\text{lens}} = \pi r_{\text{lens}}^2 \approx 1.9635 \times 10^{-3}\,\si{\square\meter}.
+\]
+The table is a square of side length $0.8\,\si{\meter}$, so with half side length $a = 0.4\,\si{\meter}$ and lens distance $h = 1.2\,\si{\meter}$, the irradiance at the lens is
+\[
+E_{\text{lens}}
+= \int_A L_{\text{table}} \frac{\cos\theta_t \cos\theta_\ell}{r^2}\, dA
+= L_{\text{table}} \int_{-a}^{a}\int_{-a}^{a}
+\frac{h^2}{(x^2+y^2+h^2)^2}\, dy\, dx.
+\]
+Numerically,
+\[
+\int_{-0.4}^{0.4}\int_{-0.4}^{0.4}
+\frac{1.2^2}{(x^2+y^2+1.2^2)^2}\, dy\, dx
+\approx 0.38741,
+\]
+so
+\[
+E_{\text{lens}} \approx 153.55 \cdot 0.38741
+\approx 59.49\,\si{\watt\per\square\meter}.
+\]
+
+The radiant power received by the lens is therefore
+\[
+\Phi_{\text{lens}} = E_{\text{lens}} A_{\text{lens}}
+\approx 59.49 \cdot 1.9635 \times 10^{-3}
+\approx 1.168 \times 10^{-1}\,\si{\watt}.
+\]
+
+Hence,
+\[
+\boxed{E_{\text{lens}} \approx 59.49\,\si{\watt\per\square\meter}}
+\]
+and
+\[
+\boxed{\Phi_{\text{lens}} \approx 0.1168\,\si{\watt}.}
+\]
+
+\section*{Assignment 3: Neumann Series Rendering Equation}
+\textbf{a)} In
+\[
+L = \sum_{i=0}^{\infty} T^i L_e,
+\]
+the quantities are:
+\begin{itemize}
+    \item $L$: the unknown radiance distribution in the scene,
+    \item $L_e$: the emitted radiance distribution,
+    \item $T$: the transport operator that maps incident radiance to reflected radiance after one scattering event.
+\end{itemize}
+
+\textbf{b)} The first summands have the following meaning:
+\begin{itemize}
+    \item $T^0 L_e = L_e$: directly emitted radiance without any bounce,
+    \item $T^1 L_e$: radiance after exactly one bounce,
+    \item $T^2 L_e$: radiance after exactly two bounces.
+\end{itemize}
+
+\textbf{c)} If the Neumann series converges, then
+\[
+\sum_{i=0}^{\infty} T^i = (I-T)^{-1},
+\]
+so the rendering equation can be written as
+\[
+\boxed{L = (I-T)^{-1} L_e.}
+\]
+
+\end{document}
