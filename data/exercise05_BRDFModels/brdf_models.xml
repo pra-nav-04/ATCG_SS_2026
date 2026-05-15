@@ -1,0 +1,129 @@
+<scene>
+
+    <component type="camera" name="mycamera">
+        <property name="fov_y" type="float" value="1.024778957977204" />
+        <property name="lookat_distance" type="float" value="10" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="4" z="10" />
+            <rotate x="1" y="0" z="0" angle="-17" />
+        </property>
+    </component>
+
+    <component type="raygen.whitted">
+        <property name="camera" type="reference" value="mycamera" />
+    </component>
+
+    <component type="emitter.directional" name="white_light">
+        <property name="irradiance" type="float" value="1" />
+        <property name="color" type="vector" x="1" y="1" z="1" />
+        <property name="direction" type="vector" x="0" y="1" z="0" />
+    </component>
+    <component type="emitter.directional" name="red_light">
+        <property name="irradiance" type="float" value="1" />
+        <property name="color" type="vector" x="1" y="0" z="0" />
+        <property name="direction" type="vector" x="-0.784885" y="0.422619" z="0.453154" />
+    </component>
+    <component type="emitter.directional" name="green_light">
+        <property name="irradiance" type="float" value="1" />
+        <property name="color" type="vector" x="0" y="1" z="0" />
+        <property name="direction" type="vector" x="0" y="0.422619" z="-0.906307" />
+    </component>
+    <component type="emitter.directional" name="blue_light">
+        <property name="irradiance" type="float" value="1" />
+        <property name="color" type="vector" x="0" y="0" z="1" />
+        <property name="direction" type="vector" x="0.784885" y="0.422619" z="0.453154" />
+    </component>
+
+    <!-- Sphere shape -->
+    <component type="shape.sphere" name="mysphere" />
+
+    <!-- Plane shape (mesh) -->
+    <component type="shape.rectangle" name="myplane" />
+
+    <!-- BSDFs -->
+    <component type="bsdf.opaque" name="floor_bsdf">
+        <property name="diffuse_color" type="vector" x="0.8" y="0.8" z="0.8" />
+        <property name="specular_f0" type="vector" x="0.2" y="0.2" z="0.2" />
+    </component>
+    <component type="bsdf.phong" name="my_phong_bsdf">
+        <property name="diffuse_color" type="vector" x="0.1" y="0.1" z="0.1" />
+        <property name="specular_f0" type="vector" x="0.5" y="0.5" z="0.5" />
+        <property name="exponent" type="float" value="32" />
+    </component>
+    <component type="bsdf.ward" name="my_isotropic_ward_bsdf">
+        <property name="diffuse_color" type="vector" x="0.1" y="0.1" z="0.1" />
+        <property name="specular_f0" type="vector" x="0.5" y="0.5" z="0.5" />
+        <property name="roughness" type="float" value="0.2" />
+    </component>
+    <component type="bsdf.ward" name="my_anisotropic_ward_bsdf">
+        <property name="diffuse_color" type="vector" x="0.1" y="0.1" z="0.1" />
+        <property name="specular_f0" type="vector" x="0.5" y="0.5" z="0.5" />
+        <property name="roughness_tangent" type="float" value="0.1" />
+        <property name="roughness_bitangent" type="float" value="0.4" />
+    </component>
+    <component type="bsdf.ggx" name="my_isotropic_ggx_bsdf">
+        <property name="diffuse_color" type="vector" x="0.1" y="0.1" z="0.1" />
+        <property name="specular_f0" type="vector" x="0.5" y="0.5" z="0.5" />
+        <property name="roughness" type="float" value="0.2" />
+    </component>
+    <component type="bsdf.ggx" name="my_anisotropic_ggx_bsdf">
+        <property name="diffuse_color" type="vector" x="0.1" y="0.1" z="0.1" />
+        <property name="specular_f0" type="vector" x="0.5" y="0.5" z="0.5" />
+        <property name="roughness_tangent" type="float" value="0.1" />
+        <property name="roughness_bitangent" type="float" value="0.4" />
+    </component>
+
+
+    <component type="shapeinstance" name="floor">
+        <property name="shape" type="reference" value="myplane" />
+        <property name="bsdf" type="reference" value="floor_bsdf" />
+        <property name="to_world" type="transform">
+            <rotate x="1" y="0" z="0" angle="-90" />
+            <scale x="20" y="20" z="20" />
+        </property>
+    </component>
+
+
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="mysphere" />
+        <property name="bsdf" type="reference" value="my_phong_bsdf" />
+        <property name="to_world" type="transform">
+            <translate x="-4" y="1" z="0" />
+            <rotate x="1" y="0" z="0" angle="90" />
+        </property>
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="mysphere" />
+        <property name="bsdf" type="reference" value="my_isotropic_ward_bsdf" />
+        <property name="to_world" type="transform">
+            <translate x="-2" y="1" z="0" />
+            <rotate x="1" y="0" z="0" angle="90" />
+        </property>
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="mysphere" />
+        <property name="bsdf" type="reference" value="my_anisotropic_ward_bsdf" />
+        <property name="to_world" type="transform">
+            <translate x="0" y="1" z="0" />
+            <rotate x="1" y="0" z="0" angle="90" />
+        </property>
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="mysphere" />
+        <property name="bsdf" type="reference" value="my_isotropic_ggx_bsdf" />
+        <property name="to_world" type="transform">
+            <translate x="2" y="1" z="0" />
+            <rotate x="1" y="0" z="0" angle="90" />
+        </property>
+    </component>
+    <component type="shapeinstance">
+        <property name="shape" type="reference" value="mysphere" />
+        <property name="bsdf" type="reference" value="my_anisotropic_ggx_bsdf" />
+        <property name="to_world" type="transform">
+            <translate x="4" y="1" z="0" />
+            <rotate x="1" y="0" z="0" angle="90" />
+        </property>
+    </component>
+
+
+</scene>

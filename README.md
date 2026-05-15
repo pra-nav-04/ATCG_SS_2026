@@ -6,6 +6,8 @@ Current implemented exercise targets:
 - `exercise00_CUDAIntro`
 - `exercise01_HDR`
 - `exercise03_Radiosity`
+- `exercise04_WhittedRaytracing`
+- `exercise05_BRDFModels`
 
 ## Table of Contents
 - [1. Introduction and Goals](#1-introduction-and-goals)
@@ -47,12 +49,15 @@ Typical run commands:
 ./bin/exercise01_HDR -d data/exercise01_HDR/book -m all
 ./bin/exercise03_Radiosity -s data/exercise03_Radiosity/simple0.xml
 ./bin/exercise03_Radiosity -s data/exercise03_Radiosity/cornell_box.xml
+./bin/exercise04_WhittedRaytracing -s data/exercise04_WhittedRaytracing/cornell_box_spheres.xml
+./bin/exercise04_WhittedRaytracing -s data/exercise04_WhittedRaytracing/cornell_box_cubes.xml
+./bin/exercise05_BRDFModels -s data/exercise05_BRDFModels/brdf_models.xml
 ```
 
 Notes:
 - the project configures runtime outputs to land in `bin/`
 - actual executable paths can still vary slightly by generator or IDE
-- interactive radiosity rendering starts when `exercise03_Radiosity` is run without `-o`
+- interactive rendering starts when `exercise03_Radiosity`, `exercise04_WhittedRaytracing`, or `exercise05_BRDFModels` is run without an output flag
 
 ## 2. Architecture Constraints
 The current repository imposes these hard constraints:
@@ -162,6 +167,19 @@ Main functional subsystems:
 - OptiX-based visibility queries
 - interactive and file-based rendering
 
+`src/exercise04_WhittedRaytracing`
+- recursive Whitted-style ray tracing pipeline
+- opaque (diffuse + ideal specular) and refractive BSDFs
+- point and directional light sources
+- Cornell box scenes with spheres and cubes (`data/exercise04_WhittedRaytracing/*.xml`)
+
+`src/exercise05_BRDFModels`
+- extends the Whitted framework with glossy BRDF models
+- energy-conserving Phong / Cosine-Lobe BRDF
+- anisotropic Geisler-Moroder Ward BRDF (Beckmann NDF, Schlick Fresnel)
+- anisotropic GGX / Trowbridge-Reitz Cook-Torrance BRDF (Smith G, Schlick F)
+- reference scene `data/exercise05_BRDFModels/brdf_models.xml`
+
 `opgutil/opg/scene`
 - `Scene` orchestration
 - XML scene loader
@@ -197,6 +215,17 @@ Radiosity internals:
 - `RadiosityEmitter` wraps emission, albedo, and per-primitive radiosity buffers
 - `RadiosityRayGenerator` computes form factors, solves radiosity, and renders from the scene camera
 
+Whitted ray tracing internals:
+- `WhittedRayGenerator` drives recursive primary, shadow, reflection, and refraction rays
+- BSDFs implement `evalBSDF` and `sampleBSDF` callable shaders bound through the SBT
+- light sources expose direct sampling for shadow rays in `lightsources.cu`
+
+BRDF models internals (`src/exercise05_BRDFModels/bsdfmodels.cu`):
+- `__direct_callable__phong_evalBSDF`: `F0 * (n+2)/(2π) * max(0, R·V)^n`
+- `__direct_callable__ward_evalBSDF`: anisotropic Geisler-Moroder Ward, unnormalised halfway `H = L + V`
+- `__direct_callable__ggx_evalBSDF`: anisotropic GGX NDF with separable Smith Λ and the `α²tan²θ` form from the assignment sheet
+- all three flip the normal toward the viewer, re-orthonormalise the tangent, and compute the bitangent as `cross(N, T)`
+
 ### 5.4 Repository Structure
 Practical directory summary:
 
@@ -208,10 +237,13 @@ Practical directory summary:
 ├── data/
 │   ├── exercise00_CUDAIntro/
 │   ├── exercise01_HDR/
-│   └── exercise03_Radiosity/
+│   ├── exercise03_Radiosity/
+│   ├── exercise04_WhittedRaytracing/
+│   └── exercise05_BRDFModels/
 ├── external/
 ├── frameworks/
-│   ├── ZIP/
+│   ├── ZIP/                       # framework_base, r00, r01, r03, r04, r05
+│   ├── framework_r00/
 │   └── framework_r01/
 ├── opgutil/
 │   └── opg/
@@ -223,8 +255,12 @@ Practical directory summary:
 └── src/
     ├── exercise00_CUDAIntro/
     ├── exercise01_HDR/
-    └── exercise03_Radiosity/
+    ├── exercise03_Radiosity/
+    ├── exercise04_WhittedRaytracing/
+    └── exercise05_BRDFModels/
 ```
+
+Theory write-ups are organised by sheet under `Theory_Solutions/r01`, `r03`, `r04`, `r05`, each containing the LaTeX sources and the compiled solution PDF.
 
 ## 6. Runtime View
 
@@ -284,14 +320,30 @@ sequenceDiagram
     Renderer->>Scene: traceRays()
 ```
 
-### 6.4 Example Scene Composition
+### 6.4 Whitted Ray Tracing
+`exercise04_WhittedRaytracing` reuses the scene/loader pipeline of the radiosity exercise but swaps in:
+- `raygen.whitted` as the entry program
+- `bsdf.opaque` and `bsdf.refractive` materials
+- point and directional emitters
+
+Flow per pixel: shoot a primary ray, evaluate direct lighting against each light, recurse into reflection/refraction branches when the BSDF declares an ideal-reflection or ideal-transmission component, and terminate at a configurable depth.
+
+### 6.5 BRDF Models
+`exercise05_BRDFModels` extends the Whitted pipeline with three glossy BRDF families behind new component types:
+- `bsdf.phong`
+- `bsdf.ward` (isotropic via `roughness`, anisotropic via `roughness_tangent` / `roughness_bitangent`)
+- `bsdf.ggx` (same isotropic/anisotropic parameterisation)
+
+The reference scene `data/exercise05_BRDFModels/brdf_models.xml` lines up five spheres lit by white-from-above plus R/G/B side lights, matching Figure 1 of the assignment sheet (Phong, isotropic Ward, anisotropic Ward, isotropic GGX, anisotropic GGX, left to right).
+
+### 6.6 Example Scene Composition
 The radiosity scenes in `data/exercise03_Radiosity/*.xml` follow a consistent pattern:
 - define a `camera`
 - define a `raygen.radiosity`
 - define mesh shapes such as `shape.objmesh`
 - attach `emitter.radiosity` components to `shapeinstance` nodes
 
-The simple scenes are good for sanity checks; the Cornell box scenes are closer to the intended final use case.
+The Whitted and BRDF scenes follow the same XML conventions but use `raygen.whitted`, `bsdf.*`, and `emitter.point` / `emitter.directional` instead. The simple scenes are good for sanity checks; the Cornell box scenes and the BRDF reference scene are closer to the intended final use case.
 
 ## 7. Deployment View
 The effective deployment target is a local developer workstation with an NVIDIA GPU.

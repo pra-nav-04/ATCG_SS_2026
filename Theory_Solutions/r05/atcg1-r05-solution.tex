@@ -1,0 +1,172 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage[margin=2.5cm]{geometry}
+
+\title{ATCG I Sheet R05 Solution}
+\author{
+\large Kamran Moradnejad (3099229) \\
+\large Pranav Yadav (50327698) \\
+\large Saransh Jain (50262919)
+}
+\date{May 15, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Assignment 2: Properties of Microfacet BRDFs}
+
+The two renderings in Figure~2 of the sheet show the same rough plane lit by an
+environment map. The image that displays a pronounced, elongated brightening of
+the reflected environment along the horizon and at grazing viewing angles
+corresponds to the \textbf{micro-facet BRDF}. The image whose specular
+reflection looks comparatively dull, with a roughly symmetric (cosine-shaped)
+falloff and no horizon brightening, corresponds to the \textbf{Phong BRDF}.
+
+\subsubsection*{Why the appearance differs}
+
+The Phong specular term has the form
+\[
+f^{\text{Phong}}_r(\omega_i,\omega_o)
+   = k_s\,\frac{n+2}{2\pi}\,(\hat{r}\cdot\omega_o)^n,
+\]
+where $\hat r$ is the perfect mirror reflection of $\omega_i$. The lobe only
+depends on the angle between $\hat r$ and the viewing direction. The amplitude
+of the highlight does not depend on the viewing zenith $\theta_v$ at all, so
+when the camera looks across the surface near grazing, Phong produces the same
+modest, roughly circular highlight as it does for a downward view.
+
+A Cook--Torrance-style micro-facet BRDF has the form
+\[
+f^{\text{micro}}_r(\omega_i,\omega_o)
+   = \frac{D(h)\,G(\omega_i,\omega_o)\,F(\omega_i\!\cdot\! h)}{4\,(n\cdot\omega_i)(n\cdot\omega_o)}.
+\]
+Two ingredients of this formula are responsible for the visible difference:
+\begin{itemize}
+    \item The denominator carries a factor $1/(n\cdot\omega_o)$, which goes to
+    infinity as the view approaches grazing. Smith shadowing $G$ also vanishes
+    at grazing, but at a slower rate than the cosine in the denominator, so the
+    BRDF value diverges as $\theta_v\!\to\!\pi/2$. This is the well known
+    ``horizon brightening'' of micro-facet models.
+    \item Schlick's Fresnel term grows from $F_0$ at normal incidence to
+    essentially~$1$ at grazing. Together with the geometry term it makes the
+    reflectance at grazing visibly bright and stretched along the view
+    direction.
+\end{itemize}
+Phong contains neither of these mechanisms, which is why its horizon stays dim
+and its highlight stays symmetric. The asymmetric, stretched grazing
+reflections in the micro-facet image are therefore an immediate consequence of
+the $DGF/(4(n\!\cdot\!\omega_i)(n\!\cdot\!\omega_o))$ structure of the
+micro-facet BRDF combined with the angle dependence of $F$ and $G$.
+
+\section*{Assignment 3: Properties of a Heitz Surface}
+
+The Heitz surface is the random height field
+\[
+h(x,y) = \sqrt{\frac{2}{N}}\sum_{i=1}^{N}\cos(\Phi_i + x f_{ix} + y f_{iy}),
+\]
+where the phases $\Phi_i \sim \mathcal{U}[0,2\pi]$ are i.i.d.\ and independent
+of the frequencies $(f_{ix},f_{iy})$, which are themselves i.i.d.\ samples of a
+spectral density. We fix a query point $(x,y)$ throughout and write
+\(\Psi_i := \Phi_i + x f_{ix} + y f_{iy}\). Conditional on
+$(f_{ix},f_{iy})$, $\Psi_i$ is still uniform on $[0,2\pi]$ modulo $2\pi$, hence
+$\sin\Psi_i$ and $\cos\Psi_i$ are zero-mean with second moment $1/2$ and
+mean-zero correlation $E[\sin\Psi_i\cos\Psi_i]=0$.
+
+\subsection*{a) Limit of the height distribution}
+
+Let
+\[
+X_i := \sqrt{\frac{2}{N}}\,\cos\Psi_i,
+\qquad i=1,\dots,N,
+\]
+so that $h(x,y)=\sum_{i=1}^N X_i$. The $X_i$ are i.i.d.\ (their joint
+distribution is invariant under permutations because both $\Phi_i$ and
+$(f_{ix},f_{iy})$ are i.i.d.\ across $i$). Using the law of total expectation,
+\[
+E[X_i] = \sqrt{\frac{2}{N}}\,E\!\left[E[\cos\Psi_i\,|\,f_{ix},f_{iy}]\right]
+       = \sqrt{\frac{2}{N}}\cdot 0 = 0,
+\]
+\[
+E[X_i^2] = \frac{2}{N}\,E[\cos^2\Psi_i]
+        = \frac{2}{N}\cdot\frac{1}{2} = \frac{1}{N}.
+\]
+Therefore
+\[
+E[h] = \sum_{i=1}^N E[X_i] = 0,
+\qquad
+\operatorname{Var}(h) = \sum_{i=1}^N E[X_i^2] = N\cdot\frac{1}{N} = 1.
+\]
+The summands are i.i.d.\ with mean $0$, variance $1/N$ and are uniformly
+bounded by $\sqrt{2/N}$, so the Lindeberg condition is trivially satisfied. By
+the classical central limit theorem
+\[
+h(x,y) \;\xrightarrow[N\to\infty]{d}\; \mathcal{N}(0,1).
+\]
+
+\subsection*{b) Limit of the slope distribution}
+
+Differentiating term by term,
+\[
+\frac{\partial h}{\partial x}
+   = -\sqrt{\frac{2}{N}}\sum_{i=1}^N f_{ix}\sin\Psi_i,
+\qquad
+\frac{\partial h}{\partial y}
+   = -\sqrt{\frac{2}{N}}\sum_{i=1}^N f_{iy}\sin\Psi_i.
+\]
+Set
+\[
+Y_i := -\sqrt{\frac{2}{N}}\,f_{ix}\sin\Psi_i.
+\]
+$f_{ix}$ is independent of $\Psi_i$ (conditioning on $f_{ix}$ leaves the
+distribution of $\Psi_i$ uniform). Hence
+\[
+E[Y_i] = -\sqrt{\frac{2}{N}}\,E[f_{ix}]\,E[\sin\Psi_i] = 0,
+\]
+\[
+E[Y_i^2] = \frac{2}{N}\,E[f_{ix}^2]\,E[\sin^2\Psi_i]
+        = \frac{2}{N}\,E[f_{ix}^2]\cdot\frac{1}{2}
+        = \frac{E[f_{ix}^2]}{N}.
+\]
+For the Heitz construction the spectrum of frequencies is chosen so that the
+second moment of $f_{ix}$ equals
+\[
+E[f_{ix}^2] = \frac{\alpha_x^2}{2},
+\]
+and analogously $E[f_{iy}^2] = \alpha_y^2/2$. (This is exactly the property
+that makes the limiting slope distribution carry the standard roughness
+parameters $\alpha_x,\alpha_y$.) Therefore
+\[
+\operatorname{Var}\!\left(\frac{\partial h}{\partial x}\right)
+   = N\cdot\frac{E[f_{ix}^2]}{N}
+   = \frac{\alpha_x^2}{2},
+\qquad
+\operatorname{Var}\!\left(\frac{\partial h}{\partial y}\right)
+   = \frac{\alpha_y^2}{2}.
+\]
+The summands $Y_i$ are i.i.d.; assuming $f_{ix}$ has a finite second moment
+(true by the construction above), Lindeberg's condition holds and the CLT
+yields
+\[
+\frac{\partial h}{\partial x}
+   \;\xrightarrow[N\to\infty]{d}\;
+   \mathcal{N}\!\left(0,\,\frac{\alpha_x^2}{2}\right),
+\qquad
+\frac{\partial h}{\partial y}
+   \;\xrightarrow[N\to\infty]{d}\;
+   \mathcal{N}\!\left(0,\,\frac{\alpha_y^2}{2}\right).
+\]
+A direct application of the Cramér--Wold device extends this to joint
+convergence of the gradient $(\partial_x h,\partial_y h)$ to a two-dimensional
+Gaussian with mean $0$ and covariance
+\(
+\operatorname{diag}(\alpha_x^2/2,\;\alpha_y^2/2)
+\)
+(the cross terms vanish because
+$E[\sin\Psi_i\sin\Psi_j]=0$ for $i\neq j$ and
+$E[f_{ix}f_{iy}]=0$ when the spectrum is separable, as is the case here).
+
+\end{document}
